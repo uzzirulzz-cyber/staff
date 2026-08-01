@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /#storefront
+Allow: /#admin
+Allow: /#dashboard
+Allow: /#cases
+Allow: /#audit
+Allow: /#profile
+
+Sitemap: http://localhost:3000/sitemap.xml

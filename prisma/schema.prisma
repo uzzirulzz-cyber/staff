@@ -1,0 +1,269 @@
+// FORENSIQ Digital Forensics Platform — Prisma schema
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String?
+  avatar         String?
+  passwordHash   String
+  role           String   @default("investigator") // admin | investigator | reviewer | viewer
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  mfaEnabled     Boolean  @default(false)
+  lastActive     DateTime?
+  tokenIdentifier String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  orgsActivated     Organization[] @relation("OrgActivatedBy")
+  casesCreated      Case[]        @relation("CaseCreatedBy")
+  casesAssigned     Case[]        @relation("CaseAssignedTo")
+  devicesAdded      Device[]      @relation("DeviceAddedBy")
+  acquisitions      Acquisition[] @relation("AcquisitionPerformedBy")
+  scansInitiated    ScanSession[] @relation("ScanInitiatedBy")
+  deliveriesCreated Delivery[]    @relation("DeliveryCreatedBy")
+  auditLogs         AuditLog[]    @relation("AuditLogByUser")
+  annotations       Annotation[]  @relation("AnnotationByUser")
+}
+
+model Organization {
+  id           String   @id @default(cuid())
+  name         String
+  licenseKey   String   @unique
+  licenseType  String   @default("professional") // standard | professional | enterprise
+  activatedAt  DateTime @default(now())
+  activatedById String
+  activatedBy  User     @relation("OrgActivatedBy", fields: [activatedById], references: [id])
+  maxUsers     Int      @default(10)
+  expiresAt    DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users    User[]
+  cases    Case[]
+  deliveries Delivery[]
+  auditLogs AuditLog[]
+}
+
+model Case {
+  id             String   @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  caseNumber     String
+  title          String
+  description    String?
+  status         String   @default("open") // open | active | review | closed | archived
+  priority       String   @default("medium") // low | medium | high | critical
+  assignedToId   String?
+  assignedTo     User?    @relation("CaseAssignedTo", fields: [assignedToId], references: [id])
+  createdById    String
+  createdBy      User     @relation("CaseCreatedBy", fields: [createdById], references: [id])
+  closedAt       DateTime?
+  tags           String   @default("[]") // JSON array
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  devices      Device[]
+  acquisitions Acquisition[]
+  scanSessions ScanSession[]
+  evidenceItems EvidenceItem[]
+  deliveries   Delivery[]
+  auditLogs    AuditLog[]
+  annotations  Annotation[]
+
+  @@index([organizationId])
+  @@index([status])
+}
+
+model Device {
+  id               String   @id @default(cuid())
+  caseId           String
+  case             Case     @relation(fields: [caseId], references: [id])
+  organizationId   String
+  name             String
+  make             String
+  model            String
+  os               String   // ios | android | windows | macos | linux | other
+  osVersion        String?
+  serialNumber     String?
+  imei             String?
+  storageGB        Int?
+  batteryPercent   Int?
+  connectionMethod String?  // usb | wifi | backup_file | sd_card | forensic_image
+  connectionStatus String   @default("disconnected") // disconnected | connected | acquired | monitoring
+  evidenceBagId    String?
+  notes            String?
+  // Location capture — saved when device is connected, monitored continuously
+  gpsLat           Float?
+  gpsLon           Float?
+  gpsAccuracy      Float?
+  gpsLocationName  String?
+  gpsCapturedAt    DateTime?
+  // Monitoring — device stays connected and is checked at regular intervals
+  monitoringEnabled Boolean  @default(false)
+  monitoringIntervalSec Int  @default(300) // 5 min default
+  lastMonitoredAt  DateTime?
+  // E2E encryption bot assignment
+  encryptionBotId  String?  @default("FORENSIQ-SecureBot-v2")
+  encryptionStatus String?  @default("active") // active | pending | failed
+  addedById        String
+  addedBy          User     @relation("DeviceAddedBy", fields: [addedById], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  acquisitions   Acquisition[]
+  scanSessions   ScanSession[]
+  evidenceItems  EvidenceItem[]
+
+  @@index([caseId])
+}
+
+model Acquisition {
+  id                   String    @id @default(cuid())
+  deviceId             String
+  device               Device    @relation(fields: [deviceId], references: [id])
+  caseId               String
+  case                 Case      @relation(fields: [caseId], references: [id])
+  method               String    // logical | file_system | physical | cloud | manual
+  status               String    @default("pending") // pending | in_progress | complete | verified | failed
+  sha256               String?
+  sha512               String?
+  dataSizeMB           Int?
+  startedAt            DateTime  @default(now())
+  completedAt          DateTime?
+  performedById        String
+  performedBy          User      @relation("AcquisitionPerformedBy", fields: [performedById], references: [id])
+  integrityVerifiedAt  DateTime?
+  integrityVerifiedById String?
+  notes                String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  @@index([deviceId])
+  @@index([caseId])
+}
+
+model ScanSession {
+  id              String    @id @default(cuid())
+  caseId          String
+  case            Case      @relation(fields: [caseId], references: [id])
+  deviceId        String?
+  device          Device?   @relation(fields: [deviceId], references: [id])
+  status          String    @default("pending") // pending | running | complete | cancelled | failed
+  stage           String?   // analysis | discovery | parsing | carving
+  stageProgress   Int?
+  filesAnalyzed   Int?
+  filesDiscovered Int?
+  filesRecoverable Int?
+  filesRecovered  Int?
+  cpuUsage        Int?
+  memUsage        Int?
+  storageUsage    Int?
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  initiatedById   String
+  initiatedBy     User      @relation("ScanInitiatedBy", fields: [initiatedById], references: [id])
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  evidenceItems   EvidenceItem[]
+
+  @@index([caseId])
+  @@index([deviceId])
+}
+
+model EvidenceItem {
+  id                String    @id @default(cuid())
+  caseId            String
+  case              Case      @relation(fields: [caseId], references: [id])
+  scanSessionId     String?
+  scanSession       ScanSession? @relation(fields: [scanSessionId], references: [id])
+  deviceId          String?
+  device            Device?   @relation(fields: [deviceId], references: [id])
+  category          String    // photos | videos | audio | sms | contacts | browser_history | call_logs | app_data | location_data | emails | documents | social_media | financial | calendar | notes | system_logs | network_data | credentials | installed_apps | other
+  fileName          String
+  filePath          String?
+  mimeType          String?
+  sizeBytes         Int?
+  recoveryStatus    String    @default("existing") // existing | deleted | orphaned | carved | cached
+  confidence        Int       @default(80)
+  createdAtDevice   DateTime?
+  modifiedAtDevice  DateTime?
+  sha256            String?
+  tags              String    @default("[]") // JSON array
+  isSelected        Boolean   @default(false)
+  notes             String?
+  preview           String?   // text preview / data URL
+  decodedContent    String?   // JSON: structured decoded data (message thread, app info, credential entry, audio waveform, etc.)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([caseId])
+  @@index([scanSessionId])
+  @@index([category])
+  @@index([recoveryStatus])
+}
+
+model Delivery {
+  id            String    @id @default(cuid())
+  caseId        String
+  case          Case      @relation(fields: [caseId], references: [id])
+  organizationId String
+  organization  Organization @relation(fields: [organizationId], references: [id])
+  format        String    // ufed_xml | csv | json | pdf_report
+  status        String    @default("pending") // pending | generating | complete | failed
+  itemCount     Int
+  fileSizeMB    Int?
+  completedAt   DateTime?
+  createdById   String
+  createdBy     User      @relation("DeliveryCreatedBy", fields: [createdById], references: [id])
+  downloadUrl   String?
+  reportNotes   String?
+  fileName      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([caseId])
+}
+
+model AuditLog {
+  id              String    @id @default(cuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  caseId          String?
+  case            Case?     @relation(fields: [caseId], references: [id])
+  userId          String
+  user            User      @relation("AuditLogByUser", fields: [userId], references: [id])
+  action          String
+  resourceType    String
+  resourceId      String?
+  details         String?
+  ipAddress       String?
+  checksum        String?
+  createdAt       DateTime  @default(now())
+
+  @@index([organizationId])
+  @@index([caseId])
+  @@index([userId])
+}
+
+model Annotation {
+  id              String    @id @default(cuid())
+  caseId          String
+  case            Case      @relation(fields: [caseId], references: [id])
+  userId          String
+  user            User      @relation("AnnotationByUser", fields: [userId], references: [id])
+  content         String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([caseId])
+}
