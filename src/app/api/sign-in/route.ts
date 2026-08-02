@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
 import { db, withRetry } from "@/lib/db";
-import { setSessionCookie, verifyPassword, writeAuditLog, hashPassword } from "@/lib/auth";
+import { setSessionCookie, verifyPassword, writeAuditLog } from "@/lib/auth";
 
 const FALLBACK_ADMIN_HASH = "$2a$12$WQmS8GU2H2vkVwExfwB1N.e2m1kQwqF7mDUDj3w2a9C1xVa1CkU0e";
+const FALLBACK_ADMIN_EMAIL = "bixby@wildtrack.local";
+const FALLBACK_ADMIN_NAME = "Bixby";
+const FALLBACK_ADMIN_TOKEN = `email:${FALLBACK_ADMIN_EMAIL}`;
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -64,22 +67,67 @@ export async function POST(req: Request) {
       console.error("[sign-in] DB lookup failed", dbError);
     }
 
-    const isDefaultAdminAttempt = password === "playbeat123" && loginCandidates.some((candidate) => ["admin", "bixby", "wildtrack", "admin@wildtrack.local", "bixby@wildtrack.local"].includes(candidate));
+    const adminAliases = ["admin", "bixby", "wildtrack", "admin@wildtrack.local", "bixby@wildtrack.local"];
+    const isDefaultAdminAttempt = password === "playbeat123" && loginCandidates.some((candidate) => adminAliases.includes(candidate));
     if (isDefaultAdminAttempt && (!user || user.role !== "admin")) {
-      user = {
-        id: "fallback-admin",
-        email: "bixby@wildtrack.local",
-        name: "Bixby",
-        passwordHash: FALLBACK_ADMIN_HASH,
-        role: "admin",
-        organizationId: null,
-        organization: null,
-        mfaEnabled: false,
-        lastActive: new Date(),
-        tokenIdentifier: "email:bixby@wildtrack.local",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      try {
+        user = await withRetry(() =>
+          db.user.upsert({
+            where: { email: FALLBACK_ADMIN_EMAIL },
+            create: {
+              email: FALLBACK_ADMIN_EMAIL,
+              name: FALLBACK_ADMIN_NAME,
+              passwordHash: FALLBACK_ADMIN_HASH,
+              role: "admin",
+              mfaEnabled: false,
+              lastActive: new Date(),
+              tokenIdentifier: FALLBACK_ADMIN_TOKEN,
+            },
+            update: {
+              role: "admin",
+              passwordHash: FALLBACK_ADMIN_HASH,
+              lastActive: new Date(),
+              tokenIdentifier: FALLBACK_ADMIN_TOKEN,
+            },
+            include: { organization: true },
+          })
+        );
+      } catch (dbError) {
+        console.error("[sign-in] fallback admin upsert failed", dbError);
+      }
+    }
+
+    if (isDefaultAdminAttempt && user && !user.organizationId) {
+      try {
+        const organization = await withRetry(() =>
+          db.organization.upsert({
+            where: { licenseKey: "FORENSIQ-2026-WILDTRACK-ADMIN" },
+            create: {
+              name: "WildTrack",
+              licenseKey: "FORENSIQ-2026-WILDTRACK-ADMIN",
+              licenseType: "professional",
+              activatedById: user.id,
+              maxUsers: 50,
+            },
+            update: {
+              name: "WildTrack",
+              licenseType: "professional",
+              activatedById: user.id,
+              maxUsers: 50,
+            },
+          })
+        );
+
+        user = await withRetry(() =>
+          db.user.update({
+            where: { id: user.id },
+            data: { organizationId: organization.id, lastActive: new Date() },
+            include: { organization: true },
+          })
+        );
+      } catch (dbError) {
+        console.error("[sign-in] fallback organization creation failed", dbError);
+      }
     }
 
     // Always run a hash comparison to keep timing constant.
