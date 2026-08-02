@@ -127,6 +127,10 @@ export async function POST(req: Request) {
         );
       } catch (dbError) {
         console.error("[sign-in] fallback organization creation failed", dbError);
+        return NextResponse.json(
+          { error: "Database error: Organization creation failed." },
+          { status: 500 }
+        );
       }
     }
 
