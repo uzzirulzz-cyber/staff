@@ -44,63 +44,63 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* FORENSIQ Dark Forensic Theme — deep navy, blue primary, teal accent */
+/* Wildlife / geo-tracking-inspired premium theme */
 :root {
-  --radius: 0.5rem;
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.96 0.005 240);
-  --card: oklch(0.21 0.025 250);
-  --card-foreground: oklch(0.96 0.005 240);
-  --popover: oklch(0.19 0.025 250);
-  --popover-foreground: oklch(0.96 0.005 240);
-  --primary: oklch(0.62 0.18 245);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.28 0.03 250);
-  --secondary-foreground: oklch(0.96 0.005 240);
-  --muted: oklch(0.24 0.02 250);
-  --muted-foreground: oklch(0.68 0.02 245);
-  --accent: oklch(0.72 0.15 195);
-  --accent-foreground: oklch(0.12 0.02 250);
-  --teal: oklch(0.72 0.15 195);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.30 0.02 250 / 60%);
-  --input: oklch(0.26 0.02 250);
-  --ring: oklch(0.62 0.18 245);
-  --chart-1: oklch(0.62 0.18 245);
-  --chart-2: oklch(0.72 0.15 195);
-  --chart-3: oklch(0.78 0.16 80);
-  --chart-4: oklch(0.65 0.22 25);
-  --chart-5: oklch(0.7 0.18 300);
-  --sidebar: oklch(0.18 0.025 250);
-  --sidebar-foreground: oklch(0.96 0.005 240);
-  --sidebar-primary: oklch(0.62 0.18 245);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.24 0.02 250);
-  --sidebar-accent-foreground: oklch(0.96 0.005 240);
-  --sidebar-border: oklch(0.30 0.02 250 / 60%);
-  --sidebar-ring: oklch(0.62 0.18 245);
+  --radius: 0.65rem;
+  --background: oklch(0.12 0.02 240);
+  --foreground: oklch(0.97 0.008 220);
+  --card: oklch(0.17 0.022 235);
+  --card-foreground: oklch(0.97 0.008 220);
+  --popover: oklch(0.16 0.02 235);
+  --popover-foreground: oklch(0.97 0.008 220);
+  --primary: oklch(0.64 0.16 155);
+  --primary-foreground: oklch(0.08 0.01 220);
+  --secondary: oklch(0.24 0.025 230);
+  --secondary-foreground: oklch(0.97 0.008 220);
+  --muted: oklch(0.21 0.02 230);
+  --muted-foreground: oklch(0.72 0.015 220);
+  --accent: oklch(0.72 0.16 88);
+  --accent-foreground: oklch(0.1 0.01 220);
+  --teal: oklch(0.68 0.14 195);
+  --destructive: oklch(0.66 0.2 24);
+  --border: oklch(0.29 0.025 235 / 70%);
+  --input: oklch(0.22 0.02 230);
+  --ring: oklch(0.64 0.16 155);
+  --chart-1: oklch(0.64 0.16 155);
+  --chart-2: oklch(0.72 0.16 88);
+  --chart-3: oklch(0.68 0.14 195);
+  --chart-4: oklch(0.66 0.2 24);
+  --chart-5: oklch(0.72 0.16 320);
+  --sidebar: oklch(0.15 0.02 235);
+  --sidebar-foreground: oklch(0.97 0.008 220);
+  --sidebar-primary: oklch(0.64 0.16 155);
+  --sidebar-primary-foreground: oklch(0.08 0.01 220);
+  --sidebar-accent: oklch(0.21 0.02 230);
+  --sidebar-accent-foreground: oklch(0.97 0.008 220);
+  --sidebar-border: oklch(0.29 0.025 235 / 70%);
+  --sidebar-ring: oklch(0.64 0.16 155);
 }
 
 .dark {
-  --background: oklch(0.16 0.02 250);
-  --foreground: oklch(0.96 0.005 240);
-  --card: oklch(0.21 0.025 250);
-  --card-foreground: oklch(0.96 0.005 240);
-  --popover: oklch(0.19 0.025 250);
-  --popover-foreground: oklch(0.96 0.005 240);
-  --primary: oklch(0.62 0.18 245);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.28 0.03 250);
-  --secondary-foreground: oklch(0.96 0.005 240);
-  --muted: oklch(0.24 0.02 250);
-  --muted-foreground: oklch(0.68 0.02 245);
-  --accent: oklch(0.72 0.15 195);
-  --accent-foreground: oklch(0.12 0.02 250);
-  --teal: oklch(0.72 0.15 195);
-  --destructive: oklch(0.65 0.22 25);
-  --border: oklch(0.30 0.02 250 / 60%);
-  --input: oklch(0.26 0.02 250);
-  --ring: oklch(0.62 0.18 245);
+  --background: oklch(0.12 0.02 240);
+  --foreground: oklch(0.97 0.008 220);
+  --card: oklch(0.17 0.022 235);
+  --card-foreground: oklch(0.97 0.008 220);
+  --popover: oklch(0.16 0.02 235);
+  --popover-foreground: oklch(0.97 0.008 220);
+  --primary: oklch(0.64 0.16 155);
+  --primary-foreground: oklch(0.08 0.01 220);
+  --secondary: oklch(0.24 0.025 230);
+  --secondary-foreground: oklch(0.97 0.008 220);
+  --muted: oklch(0.21 0.02 230);
+  --muted-foreground: oklch(0.72 0.015 220);
+  --accent: oklch(0.72 0.16 88);
+  --accent-foreground: oklch(0.1 0.01 220);
+  --teal: oklch(0.68 0.14 195);
+  --destructive: oklch(0.66 0.2 24);
+  --border: oklch(0.29 0.025 235 / 70%);
+  --input: oklch(0.22 0.02 230);
+  --ring: oklch(0.64 0.16 155);
 }
 
 @layer base {
@@ -134,12 +134,13 @@
   letter-spacing: -0.01em;
 }
 
-/* Grid pattern background — forensic "scan" look */
+/* Grid pattern background — wildlife trail / geo mapping look */
 .bg-grid-pattern {
   background-image:
-    linear-gradient(to right, oklch(0.30 0.02 250 / 30%) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(0.30 0.02 250 / 30%) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, oklch(0.30 0.025 235 / 24%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.30 0.025 235 / 24%) 1px, transparent 1px),
+    radial-gradient(circle at top left, oklch(0.64 0.16 155 / 12%), transparent 40%);
+  background-size: 32px 32px, 32px 32px, auto;
 }
 
 /* Shimmer effect for scan progress */

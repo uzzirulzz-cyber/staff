@@ -14,8 +14,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coming Soon",
-  description: "",
+  title: "Staff Portal",
+  description: "Staff access and activation portal",
   icons: { icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg" },
   robots: { index: false, follow: false },
 };

@@ -107,23 +107,24 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col bg-background bg-grid-pattern">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_top_left,_rgba(100,255,183,0.16),_transparent_60%)]" />
       <Toaster richColors closeButton position="top-right" />
       <AutoCapture />
       {/* Top bar */}
-      <header className="sticky top-0 z-40 h-14 border-b border-border/60 bg-card/80 backdrop-blur-md">
+      <header className="sticky top-0 z-40 h-14 border-b border-border/60 bg-card/85 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
         <div className="flex h-full items-center gap-3 px-3 sm:px-5">
           <button
             onClick={() => go({ name: "dashboard" })}
             className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
-              <FlaskConical className="h-4 w-4 text-primary" />
-              <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-accent pulse-ring" />
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 via-primary/10 to-accent/25 ring-1 ring-primary/30 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]">
+              <FlaskConical className="h-4.5 w-4.5 text-primary" />
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent pulse-ring" />
             </div>
             <div className="hidden sm:block leading-none">
-              <div className="text-sm font-semibold tracking-tight">FORENSIQ</div>
+              <div className="text-sm font-semibold tracking-tight">WILDTRACK</div>
               <div className="text-[10px] text-muted-foreground font-mono-forensic">
-                v4.2.1 · {org?.licenseType?.toUpperCase() ?? "UNLICENSED"}
+                GEO INTELLIGENCE · {org?.licenseType?.toUpperCase() ?? "UNLICENSED"}
               </div>
             </div>
           </button>

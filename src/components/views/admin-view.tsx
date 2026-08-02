@@ -54,7 +54,8 @@ import {
   FileText,
   MapPin,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createInviteToken } from "@/lib/activation-link";
 
 const roleColors: Record<string, string> = {
   admin: "text-destructive bg-destructive/10 border-destructive/30",
@@ -274,11 +275,11 @@ export function AdminView() {
           <DialogHeader>
             <DialogTitle>Invite Team Member</DialogTitle>
             <DialogDescription>
-              Share your organization's activation link or license key with a colleague. They can open FORENSIQ and join your organization directly from the activation screen.
+              Share your organization's staff access link with a colleague so they can open the portal and activate their account without extra setup.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <OrgLicenseKey />
+            <OrgLicenseKey inviteOpen={inviteOpen} />
           </div>
           <DialogFooter>
             <Button onClick={() => setInviteOpen(false)} className="cursor-pointer">Close</Button>
@@ -289,52 +290,72 @@ export function AdminView() {
   );
 }
 
-function OrgLicenseKey() {
+function OrgLicenseKey({ inviteOpen }: { inviteOpen: boolean }) {
   const { data: org, isLoading } = useOrganization();
   const [copied, setCopied] = useState(false);
+  const [inviteLink, setInviteLink] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!inviteOpen || !org?.id) return;
+    const nextLink = `${window.location.origin}/?invite=${encodeURIComponent(createInviteToken(org.id))}`;
+    setInviteLink(nextLink);
+  }, [inviteOpen, org?.id]);
+
   if (isLoading) {
     return <div className="text-xs text-muted-foreground text-center py-2">Loading…</div>;
   }
   if (!org) {
     return <div className="text-xs text-muted-foreground text-center py-2">Organization not found.</div>;
   }
-  const inviteLink = typeof window !== "undefined"
-    ? `${window.location.origin}/?mode=join&licenseKey=${encodeURIComponent(org.licenseKey)}`
-    : org.licenseKey;
+
+  const displayLink = inviteLink ?? `${window.location.origin}/?invite=${encodeURIComponent(createInviteToken(org.id))}`;
 
   return (
     <>
       <div className="rounded-md bg-muted/40 p-3">
         <div className="text-[10px] font-mono-forensic uppercase tracking-wider text-muted-foreground">
-          Your organization license key
+          Organization license key
         </div>
         <div className="text-sm font-mono-forensic mt-1 break-all">{org.licenseKey}</div>
       </div>
       <div className="rounded-md border border-border/60 bg-background/80 p-3">
         <div className="text-[10px] font-mono-forensic uppercase tracking-wider text-muted-foreground">
-          Activation link for new members
+          Unique staff access link
         </div>
-        <div className="text-sm font-mono-forensic mt-1 break-all">{inviteLink}</div>
+        <div className="text-sm font-mono-forensic mt-1 break-all">{displayLink}</div>
       </div>
       <div className="text-xs text-muted-foreground leading-relaxed">
-        Share this link with a colleague so they can open FORENSIQ, select
-        <strong>Register</strong>, choose <strong>Join existing</strong>, and
-        complete activation without manually entering the license key.
+        Each invite link is fresh and unique for the next teammate, so they can open the portal,
+        join your organization, and activate their account without manually entering credentials or a license key.
       </div>
-      <Button
-        variant="outline"
-        size="sm"
-        className="w-full cursor-pointer"
-        onClick={() => {
-          if (navigator.clipboard) {
-            navigator.clipboard.writeText(inviteLink);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-          }
-        }}
-      >
-        {copied ? "Copied!" : "Copy invite link"}
-      </Button>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 cursor-pointer"
+          onClick={() => {
+            if (!org?.id) return;
+            const nextLink = `${window.location.origin}/?invite=${encodeURIComponent(createInviteToken(org.id))}`;
+            setInviteLink(nextLink);
+          }}
+        >
+          Generate new link
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 cursor-pointer"
+          onClick={() => {
+            if (navigator.clipboard) {
+              navigator.clipboard.writeText(displayLink);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            }
+          }}
+        >
+          {copied ? "Copied!" : "Copy invite link"}
+        </Button>
+      </div>
     </>
   );
 }
