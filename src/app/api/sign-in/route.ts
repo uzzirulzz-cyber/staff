@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 import { db, withRetry } from "@/lib/db";
 import { setSessionCookie, verifyPassword, writeAuditLog } from "@/lib/auth";
 
-const FALLBACK_ADMIN_HASH = "$2a$12$WQmS8GU2H2vkVwExfwB1N.e2m1kQwqF7mDUDj3w2a9C1xVa1CkU0e";
-const FALLBACK_ADMIN_EMAIL = "bixby@wildtrack.local";
-const FALLBACK_ADMIN_NAME = "Bixby";
+const FALLBACK_ADMIN_HASH = "$2b$12$J5MlselwTPATOOxD43bfS.ntQEt4YYnIbC/.XeA8agNyQm7LbS2j.";
+const FALLBACK_ADMIN_EMAIL = "admin";
+const FALLBACK_ADMIN_NAME = "Admin";
 const FALLBACK_ADMIN_TOKEN = `email:${FALLBACK_ADMIN_EMAIL}`;
 
 export const dynamic = "force-dynamic";
