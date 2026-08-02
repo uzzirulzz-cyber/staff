@@ -274,7 +274,7 @@ export function AdminView() {
           <DialogHeader>
             <DialogTitle>Invite Team Member</DialogTitle>
             <DialogDescription>
-              Share your organization's license key with a colleague. They can register a new account and join your organization from the activation screen.
+              Share your organization's activation link or license key with a colleague. They can open FORENSIQ and join your organization directly from the activation screen.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
@@ -298,6 +298,10 @@ function OrgLicenseKey() {
   if (!org) {
     return <div className="text-xs text-muted-foreground text-center py-2">Organization not found.</div>;
   }
+  const inviteLink = typeof window !== "undefined"
+    ? `${window.location.origin}/?mode=join&licenseKey=${encodeURIComponent(org.licenseKey)}`
+    : org.licenseKey;
+
   return (
     <>
       <div className="rounded-md bg-muted/40 p-3">
@@ -306,12 +310,16 @@ function OrgLicenseKey() {
         </div>
         <div className="text-sm font-mono-forensic mt-1 break-all">{org.licenseKey}</div>
       </div>
+      <div className="rounded-md border border-border/60 bg-background/80 p-3">
+        <div className="text-[10px] font-mono-forensic uppercase tracking-wider text-muted-foreground">
+          Activation link for new members
+        </div>
+        <div className="text-sm font-mono-forensic mt-1 break-all">{inviteLink}</div>
+      </div>
       <div className="text-xs text-muted-foreground leading-relaxed">
-        Share this key with your colleague. Have them open FORENSIQ, choose{" "}
-        <strong>Register</strong>, fill in their details, select{" "}
-        <strong>Join existing</strong>, and enter this key. Their account will
-        be created with the <strong>investigator</strong> role. You can promote
-        them later from this panel.
+        Share this link with a colleague so they can open FORENSIQ, select
+        <strong>Register</strong>, choose <strong>Join existing</strong>, and
+        complete activation without manually entering the license key.
       </div>
       <Button
         variant="outline"
@@ -319,13 +327,13 @@ function OrgLicenseKey() {
         className="w-full cursor-pointer"
         onClick={() => {
           if (navigator.clipboard) {
-            navigator.clipboard.writeText(org.licenseKey);
+            navigator.clipboard.writeText(inviteLink);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }
         }}
       >
-        {copied ? "Copied!" : "Copy license key"}
+        {copied ? "Copied!" : "Copy invite link"}
       </Button>
     </>
   );
@@ -694,8 +702,8 @@ function AdminAllDataSection() {
               {data.recentEvidence.map((e) => {
                 const decoded = e.decodedContent
                   ? (() => {
-                      try { return JSON.parse(e.decodedContent); } catch { return null; }
-                    })()
+                    try { return JSON.parse(e.decodedContent); } catch { return null; }
+                  })()
                   : null;
                 return (
                   <button

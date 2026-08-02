@@ -1,10 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { ActivationFlow } from "@/components/activation-flow-fixed";
 
 export default function Home() {
-  useEffect(() => {
-    window.location.replace("/admin");
-  }, []);
-  return <div className="min-h-screen bg-background" />;
+  return <ActivationFlow />;
 }
