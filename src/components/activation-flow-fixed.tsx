@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { useActivate, useSignIn } from "@/lib/api";
+import { useActivate, useSignIn, useSession } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -61,6 +61,8 @@ export function ActivationFlow() {
     const [password, setPassword] = useState("playbeat123");
     const [showPassword, setShowPassword] = useState(false);
 
+    const router = useRouter();
+    const { data: session, isLoading: sessionLoading } = useSession();
     const signIn = useSignIn();
     const activate = useActivate();
     const loading = signIn.isPending || activate.isPending;
@@ -104,6 +106,12 @@ export function ActivationFlow() {
         }
     }, [initialInviteToken, initialLicenseKey, initialActivationMode]);
 
+    useEffect(() => {
+        if (!sessionLoading && session?.user) {
+            router.push("/admin");
+        }
+    }, [session, sessionLoading, router]);
+
     const handleSignIn = async () => {
         if (!email || !password) {
             toast.error("Email and password are required");
@@ -113,6 +121,7 @@ export function ActivationFlow() {
         try {
             await signIn.mutateAsync({ email: email.trim(), password });
             toast.success("Signed in");
+            router.push("/admin");
         } catch (e) {
             toast.error((e as Error).message);
         }
@@ -143,7 +152,7 @@ export function ActivationFlow() {
                 password,
             });
             toast.success("Activation complete — you are signed in.");
-            window.location.reload();
+            router.push("/admin");
         } catch (e) {
             toast.error((e as Error).message);
         }
@@ -155,7 +164,7 @@ export function ActivationFlow() {
             <header className="relative h-14 border-b border-border/60 bg-card/85 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
                 <div className="flex h-full items-center gap-2.5 px-5">
                     <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 via-primary/10 to-accent/25 ring-1 ring-primary/30 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]">
-                        <img src="/logo.svg" alt="WildTrack logo" className="h-5 w-5" />
+                        <img src="/logo.png" alt="WildTrack logo" className="h-5 w-5" />
                         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent pulse-ring" />
                     </div>
                     <div className="leading-none">

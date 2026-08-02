@@ -13,24 +13,16 @@ import { useView } from "@/lib/view-router";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export default function AdminPage() {
-  const { data: session, isLoading, isError, refetch } = useSession();
+  const { data: session, isLoading } = useSession();
   const signIn = useSignIn();
   const view = useView((s) => s.view);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [authed, setAuthed] = useState(false);
 
-  useEffect(() => {
-    if (isError) {
-      const timer = setTimeout(() => refetch(), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isError, refetch]);
-
-  if (isLoading || authed) {
+  if (isLoading || signIn.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -40,14 +32,15 @@ export default function AdminPage() {
 
   if (!session?.user || !session.organization) {
     const handleSignIn = async () => {
-      if (!email || !password) return;
+      if (!email || !password) {
+        toast.error("Email and password are required");
+        return;
+      }
       try {
         await signIn.mutateAsync({ email, password });
-        setAuthed(true);
-        setTimeout(() => window.location.reload(), 1000);
+        toast.success("Signed in");
       } catch (e) {
         toast.error((e as Error).message);
-        setAuthed(false);
       }
     };
 
@@ -72,7 +65,7 @@ export default function AdminPage() {
             onClick={handleSignIn}
             disabled={signIn.isPending}
           >
-            {signIn.isPending ? "..." : "Enter"}
+            {signIn.isPending ? "Signing in…" : "Enter"}
           </Button>
         </div>
       </div>

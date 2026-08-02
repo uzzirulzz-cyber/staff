@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "WildTrack",
   description: "WildTrack staff access and activation portal",
-  icons: { icon: "/logo.svg" },
+  icons: { icon: "/logo.png" },
   robots: { index: false, follow: false },
 };
 
