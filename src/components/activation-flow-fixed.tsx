@@ -155,11 +155,11 @@ export function ActivationFlow() {
             <header className="relative h-14 border-b border-border/60 bg-card/85 backdrop-blur-xl shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
                 <div className="flex h-full items-center gap-2.5 px-5">
                     <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 via-primary/10 to-accent/25 ring-1 ring-primary/30 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]">
-                        <FlaskConical className="h-4.5 w-4.5 text-primary" />
+                        <img src="/logo.svg" alt="WildTrack logo" className="h-5 w-5" />
                         <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent pulse-ring" />
                     </div>
                     <div className="leading-none">
-                        <div className="text-sm font-semibold tracking-tight">WILDTRACK</div>
+                        <div className="text-sm font-semibold tracking-tight">WildTrack</div>
                         <div className="text-[10px] text-muted-foreground font-mono-forensic">GEO INTELLIGENCE · STAFF ACCESS</div>
                     </div>
                     <Badge variant="outline" className="ml-auto text-[10px] font-mono-forensic">

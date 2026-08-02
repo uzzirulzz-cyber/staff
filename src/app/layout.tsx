@@ -14,9 +14,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Staff Portal",
-  description: "Staff access and activation portal",
-  icons: { icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg" },
+  title: "WildTrack",
+  description: "WildTrack staff access and activation portal",
+  icons: { icon: "/logo.svg" },
   robots: { index: false, follow: false },
 };
 

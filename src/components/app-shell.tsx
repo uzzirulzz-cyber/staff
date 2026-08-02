@@ -118,11 +118,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             className="flex items-center gap-2.5 cursor-pointer group"
           >
             <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary/30 via-primary/10 to-accent/25 ring-1 ring-primary/30 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset]">
-              <FlaskConical className="h-4.5 w-4.5 text-primary" />
+              <img src="/logo.svg" alt="WildTrack logo" className="h-5 w-5" />
               <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-accent pulse-ring" />
             </div>
             <div className="hidden sm:block leading-none">
-              <div className="text-sm font-semibold tracking-tight">WILDTRACK</div>
+              <div className="text-sm font-semibold tracking-tight">WildTrack</div>
               <div className="text-[10px] text-muted-foreground font-mono-forensic">
                 GEO INTELLIGENCE · {org?.licenseType?.toUpperCase() ?? "UNLICENSED"}
               </div>
